@@ -1,4 +1,4 @@
-package woooooordle.server
+package woooooordle.server.objects
 
 import scala.io.Source
 
@@ -9,8 +9,8 @@ case class Dictionary(entries: Set[String]) {
 
   def getSingleLengthDictionary(wordLength: Int): Dictionary = {
     val filteredEntries = this.entries.filter(_.length == wordLength)
-    if (filteredEntries.isEmpty) {
-      throw new IllegalArgumentException(s"No words of requested length $wordLength in this dictionary")
+    if (filteredEntries.isEmpty || filteredEntries.size < wordLength) {
+      throw new IllegalArgumentException(s"Not enough words of requested length $wordLength in this dictionary")
     }
     Dictionary(filteredEntries)
   }
@@ -26,8 +26,6 @@ case class Dictionary(entries: Set[String]) {
 }
 
 trait DictionaryLoader {
-  val dictEntries = Set.empty[String]
-
   def loadDictionary(filePath: String): Dictionary = {
     val source = Source.fromFile(filePath)
     val dict = Dictionary(source.getLines().toSet)
