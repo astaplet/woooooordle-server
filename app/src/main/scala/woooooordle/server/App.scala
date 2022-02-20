@@ -3,10 +3,50 @@
  */
 package woooooordle.server
 
+import akka.actor.{ActorRef, ActorSystem, Props}
+import woooooordle.server.objects.{AppArgs, StartModes}
+import org.sellmerfud.optparse.{OptionParser, OptionParserException}
+import woooooordle.server.actors.GameStateActor
+import woooooordle.server.cli.CLIClient
+import woooooordle.server.objects.StartModes.{CLI, Empty, Server}
+
 object App {
   def main(args: Array[String]): Unit = {
-    println(greeting())
-  }
+    val actorSystem: ActorSystem = ActorSystem("woooooordle")
+    implicit val gameStateActor: ActorRef =
+      actorSystem.actorOf(Props[GameStateActor](), "gameStateActor")
 
-  def greeting(): String = "Hello, world!"
+    if (args.length > 1) {
+      println("Too many arguments, can't start!")
+      System.exit(1)
+    } else if (args.length < 1) {
+      println("Too few arguments, can't start!")
+      System.exit(1)
+    } else {
+
+      val cli = new OptionParser[AppArgs] {
+        flag("-c", "--cli", "Start a game using the CLI game mode") {
+          _.copy(startMode = CLI)
+        }
+        flag("-s", "--server", "Start the Akka HTTP game server") {
+          _.copy(startMode = Server)
+        }
+      }
+
+      try {
+        val appArgs = cli.parse(args, AppArgs(Empty))
+        appArgs.startMode match {
+          case StartModes.CLI    => CLIClient.startGame
+          case StartModes.Server => println("not implemented yet!")
+          case StartModes.Empty =>
+            println("How did you get here?")
+            System.exit(1)
+        }
+      } catch {
+        case e: OptionParserException =>
+          println(e.getMessage)
+          System.exit(1)
+      }
+    }
+  }
 }

@@ -27,7 +27,7 @@ dependencies {
     testRuntimeOnly("org.scala-lang.modules:scala-xml_2.13:1.2.0")
 
     //Caffeine cache for the GameStateActor
-    implementation("com.github.blemale:scaffeine_2.12:5.1.2")
+    implementation("com.github.blemale:scaffeine_2.13:5.1.2")
 
     //Akka
 
@@ -35,6 +35,9 @@ dependencies {
 
     implementation ("com.typesafe.akka:akka-actor_2.13:2.6.18")
     testImplementation ("com.typesafe.akka:akka-testkit_2.13:2.6.18")
+
+    //command line parser
+    implementation("org.sellmerfud:optparse_2.13:2.2")
 
 }
 

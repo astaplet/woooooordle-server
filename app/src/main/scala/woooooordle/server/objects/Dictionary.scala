@@ -27,7 +27,7 @@ case class Dictionary(entries: Set[String]) {
 
 trait DictionaryLoader {
   def loadDictionary(filePath: String): Dictionary = {
-    val source = Source.fromFile(filePath)
+    val source = Source.fromResource(filePath)
     val dict = Dictionary(source.getLines().toSet)
     source.close()
     dict
